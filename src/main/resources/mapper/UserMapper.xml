@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="cqut.icode.system.mapper.UserMapper">
+    <select id="findCourseIdsByUserId" resultType="Long">
+        select ur.course_id courseId
+        from ktp_user u
+                 left join ktp_user_course_homework ur on (u.id = ur.user_id)
+        where u.id = #{userId}
+    </select>
+
+    <!-- 找到用户所有的置顶、未归档课程信息 -->
+    <select id="findTopCoursesByUserId" resultType="java.util.HashMap">
+        select c.id,
+               c.coursename,
+               c.code,
+               c.classname,
+               c.semester_year semesterYear,
+               c.semester,
+               c.bg_image_url bgImageUrl,
+               uc.pigeonhole,
+               uc.role
+        from ktp_user u
+                 left join ktp_user_course uc on (u.id = uc.user_id)
+                 left join ktp_course c on (c.id = uc.course_id)
+        where u.id = #{userId} and uc.top = 1 and uc.pigeonhole = 0
+        order by uc.priority
+    </select>
+
+    <!-- 找到用户所有的非置顶、未归档课程信息 -->
+    <select id="findNonTopCoursesByUserId" resultType="java.util.HashMap">
+        select c.id,
+               c.coursename,
+               c.code,
+               c.classname,
+               c.semester_year semesterYear,
+               c.semester,
+               c.bg_image_url bgImageUrl,
+               uc.pigeonhole,
+               uc.role
+        from ktp_user u
+                 left join ktp_user_course uc on (u.id = uc.user_id)
+                 left join ktp_course c on (c.id = uc.course_id)
+        where u.id = #{userId} and uc.top = 0 and uc.pigeonhole = 0
+        order by uc.priority
+    </select>
+
+    <select id="findCourseOwnerByCourseId" resultType="cqut.icode.system.entry.User">
+        select u.id, u.username, u.avatar
+        from ktp_user u
+                 left join ktp_user_course uc on (u.id = uc.user_id)
+                 left join ktp_course c on (c.id = uc.course_id)
+        where course_id=#{courseId} and uc.role = 1
+    </select>
+
+    <select id="findStudentsOfCourseByCourseId" resultType="java.util.HashMap">
+        select u.username, u.avatar
+        from ktp_user u
+                 left join ktp_user_course uc on (u.id = uc.user_id)
+                 left join ktp_course c on (c.id = uc.course_id)
+        where course_id=#{courseId} and uc.role = 0
+        order by u.id
+        limit 0, 3
+    </select>
+
+    <select id="findHomeworkOfCourseByCourseId" resultType="java.util.HashMap">
+        select h.id, h.title
+        from ktp_homework h
+                 left join ktp_course_homework uh on (h.id = uh.homework_id)
+                 left join ktp_course c on (c.id = uh.course_id)
+        where course_id=#{courseId}
+        order by h.create_time desc
+        limit 0, 3
+    </select>
+</mapper>

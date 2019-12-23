@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="cqut.icode.system.mapper.PermMapper">
+    <select id="findUserPermissions" resultType="cqut.icode.system.entity.perm.Perm">
+        select p.*
+        from ktp_role  r
+               left join ktp_user_role ur on (r.id = ur.role_id)
+               left join ktp_user u on (u.id = ur.user_id)
+               left join ktp_role_perm rm on (r.id = rm.role_id)
+               left join ktp_perm p on (p.id = rm.perm_id)
+        where u.username = #{username}
+          and p.perms is not null
+          and p.perms != ''
+    </select>
+</mapper>

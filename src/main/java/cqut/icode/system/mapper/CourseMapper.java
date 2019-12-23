@@ -1,7 +1,7 @@
 package cqut.icode.system.mapper;
 
 import cqut.icode.common.mapper.MyMapper;
-import cqut.icode.system.entry.Course;
+import cqut.icode.system.entity.Course;
 
 /**
  * @author tq

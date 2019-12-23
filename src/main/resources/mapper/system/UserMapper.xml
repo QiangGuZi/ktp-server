@@ -8,7 +8,7 @@
         where u.id = #{userId}
     </select>
 
-    <!-- 找到用户所有的置顶、未归档课程信息 -->
+    <!-- 找到用户所有的#置顶#、未归档课程信息 -->
     <select id="findTopCoursesByUserId" resultType="java.util.HashMap">
         select c.id,
                c.coursename,
@@ -26,7 +26,7 @@
         order by uc.priority
     </select>
 
-    <!-- 找到用户所有的非置顶、未归档课程信息 -->
+    <!-- 找到用户所有的#非置顶#、未归档课程信息 -->
     <select id="findNonTopCoursesByUserId" resultType="java.util.HashMap">
         select c.id,
                c.coursename,
@@ -44,7 +44,7 @@
         order by uc.priority
     </select>
 
-    <select id="findCourseOwnerByCourseId" resultType="cqut.icode.system.entry.User">
+    <select id="findCourseOwnerByCourseId" resultType="cqut.icode.system.entity.User">
         select u.id, u.username, u.avatar
         from ktp_user u
                  left join ktp_user_course uc on (u.id = uc.user_id)

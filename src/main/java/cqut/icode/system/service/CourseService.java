@@ -1,7 +1,7 @@
 package cqut.icode.system.service;
 
 import cqut.icode.common.service.BaseService;
-import cqut.icode.system.entry.Course;
+import cqut.icode.system.entity.Course;
 
 /**
  * @author tq

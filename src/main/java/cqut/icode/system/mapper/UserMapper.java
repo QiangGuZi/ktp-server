@@ -1,8 +1,7 @@
 package cqut.icode.system.mapper;
 
 import cqut.icode.common.mapper.MyMapper;
-import cqut.icode.system.entry.Homework;
-import cqut.icode.system.entry.User;
+import cqut.icode.system.entity.User;
 
 import java.util.HashMap;
 import java.util.List;

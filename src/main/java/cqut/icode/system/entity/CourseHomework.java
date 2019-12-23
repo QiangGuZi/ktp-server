@@ -1,12 +1,9 @@
-package cqut.icode.system.entry;
+package cqut.icode.system.entity;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Data;
-import org.springframework.format.annotation.DateTimeFormat;
 
 import javax.persistence.Column;
 import javax.persistence.Table;
-import java.util.Date;
 
 /**
  * @author tq

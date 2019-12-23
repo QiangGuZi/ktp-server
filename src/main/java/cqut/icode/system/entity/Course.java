@@ -1,4 +1,4 @@
-package cqut.icode.system.entry;
+package cqut.icode.system.entity;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Data;

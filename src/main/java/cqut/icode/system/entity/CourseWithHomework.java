@@ -1,4 +1,4 @@
-package cqut.icode.system.entry;
+package cqut.icode.system.entity;
 
 import lombok.Data;
 

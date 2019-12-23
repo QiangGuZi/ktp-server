@@ -1,7 +1,7 @@
 package cqut.icode.system.service.impl;
 
 import cqut.icode.common.service.impl.BaseServiceImpl;
-import cqut.icode.system.entry.Course;
+import cqut.icode.system.entity.Course;
 import cqut.icode.system.mapper.CourseMapper;
 import cqut.icode.system.service.CourseService;
 import org.springframework.beans.factory.annotation.Autowired;

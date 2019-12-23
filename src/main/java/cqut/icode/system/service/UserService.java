@@ -1,7 +1,7 @@
 package cqut.icode.system.service;
 
 import cqut.icode.common.service.BaseService;
-import cqut.icode.system.entry.User;
+import cqut.icode.system.entity.User;
 
 import java.util.List;
 import java.util.Map;
@@ -21,4 +21,12 @@ public interface UserService extends BaseService<User> {
      * @return 如上
      */
     public Map<String, List> getCourseByUser(Long userId);
+
+
+    /**
+     * 权限用到
+     * @param username
+     * @return
+     */
+    User findByName(String username);
 }

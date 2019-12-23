@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="cqut.icode.system.mapper.RoleMapper">
+    <select id="findUserRole" resultType="cqut.icode.system.entity.perm.Role">
+        select r.*
+        from ktp_user u
+               left join ktp_user_role ur on (u.id = ur.user_id)
+               left join ktp_role r on (r.id = ur.role_id)
+        where u.username = #{username}
+    </select>
+</mapper>

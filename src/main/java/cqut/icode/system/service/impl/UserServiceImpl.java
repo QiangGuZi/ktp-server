@@ -1,11 +1,12 @@
 package cqut.icode.system.service.impl;
 
 import cqut.icode.common.service.impl.BaseServiceImpl;
-import cqut.icode.system.entry.User;
+import cqut.icode.system.entity.User;
 import cqut.icode.system.mapper.UserMapper;
 import cqut.icode.system.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import tk.mybatis.mapper.entity.Example;
 
 import java.util.HashMap;
 import java.util.List;
@@ -17,6 +18,15 @@ import java.util.Map;
  */
 @Service
 public class UserServiceImpl extends BaseServiceImpl<User> implements UserService {
+
+    @Override
+    public User findByName(String username) {
+        Example example = new Example(User.class);
+        example.createCriteria().andCondition("username=", username);
+        List<User> list = this.selectByExample(example);
+        return list.isEmpty() ? null : list.get(0);
+    }
+
     @Autowired
     UserMapper userMapper;
 
@@ -64,4 +74,6 @@ public class UserServiceImpl extends BaseServiceImpl<User> implements UserServic
 
         return list;
     }
+
+
 }

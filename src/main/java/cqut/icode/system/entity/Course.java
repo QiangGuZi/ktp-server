@@ -19,7 +19,7 @@ import java.util.Date;
 public class Course implements Serializable {
     private static final long serialVersionUID = 3554316034860494763L;
     @Id
-    private Integer id;
+    private Long id;
     private String coursename;
     private String code;
     private String classname;

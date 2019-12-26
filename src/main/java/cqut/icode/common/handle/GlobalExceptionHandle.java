@@ -34,12 +34,14 @@ public class GlobalExceptionHandle {
 //    }
 
     @ExceptionHandler(value = GlobalException.class)
-    public ResponseEntity<ApiErrorResponse> globalExceptionHandle(GlobalException e, HttpStatus httpStatus) {
+    public ResponseEntity<ApiErrorResponse> globalExceptionHandle(GlobalException e, HttpServletResponse response) {
+//        HttpStatus status = HttpStatus.valueOf(response.getStatus());
+        HttpStatus status = HttpStatus.BAD_REQUEST;
         ApiErrorResponse errorResponse = new ApiErrorResponse.ApiErrorResponseBuilder()
-                .withStatus(httpStatus)
-                .withError(httpStatus.name())
-                .withMessage(e.getLocalizedMessage())
-                .withDetails(e + e.getMessage())
+                .withStatus(status)
+                .withError(status.name())
+                .withMessage(e.getMsg())
+                .withDetails(e + e.getMsg())
                 .build();
 
         return new ResponseEntity<>(errorResponse, errorResponse.getStatus());

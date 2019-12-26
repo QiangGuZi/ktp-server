@@ -8,5 +8,9 @@ import cqut.icode.system.entity.Course;
  * @date 2019/12/18
  */
 public interface CourseService extends BaseService<Course> {
-
+    /**
+     * 检查加课码是否存在
+     * @param code 加课码
+     */
+    Boolean checkCodeIsExist(String code);
 }

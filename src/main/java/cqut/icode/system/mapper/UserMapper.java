@@ -1,6 +1,7 @@
 package cqut.icode.system.mapper;
 
 import cqut.icode.common.mapper.MyMapper;
+import cqut.icode.system.entity.Course;
 import cqut.icode.system.entity.User;
 
 import java.util.HashMap;
@@ -21,6 +22,14 @@ public interface UserMapper extends MyMapper<User> {
     List<Long> findCourseIdsByUserId(Long userId);
 
     /**
+     * 找到用户对应的所有归档课程id的集合
+     *
+     * @param userId 用户id
+     * @return 集合
+     */
+    List<HashMap<String, Object>> findCourseOfPigeonholeByUserId(Long userId);
+
+    /**
      * 找到用户对应的所有置顶、未归档课程的集合
      *
      * @param userId 用户id
@@ -37,26 +46,25 @@ public interface UserMapper extends MyMapper<User> {
     List<HashMap<String, Object>> findNonTopCoursesByUserId(Long userId);
 
     /**
-     * 找到课程的教师（所有者）
-     *
-     * @param courseId 课程id
-     * @return 教师信息
+     * 改变课程指定状态
+     * @param userId .
+     * @param courseId .
      */
-    User findCourseOwnerByCourseId(Long courseId);
+    void changeCourseTopStatus(Long userId, Long courseId);
 
     /**
-     * 找到课程的学生，最多三个
-     *
-     * @param courseId 课程id
-     * @return 学生列表
+     * 改变课程归档状态
+     * @param userId .
+     * @param courseId .
      */
-    List<HashMap<String, Object>> findStudentsOfCourseByCourseId(Long courseId);
+    void changeCoursePigeonholeStatus(Long userId, Long courseId);
 
     /**
-     * 找到课程的历史作业，最多两个，按时间倒序
-     *
-     * @param courseId 课程id
-     * @return 作业列表
+     * 改变课程排序状态
+     * @param userId .
+     * @param courseId .
+     * @param priority .
      */
-    List<HashMap<String, Object>> findHomeworkOfCourseByCourseId(Long courseId);
+    void changeCoursePriority(Long userId, Long courseId, Long priority);
+
 }

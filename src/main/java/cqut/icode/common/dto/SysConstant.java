@@ -16,4 +16,8 @@ public class SysConstant {
     public static final int HASHNUM = 10;
 
 
+    /**
+     * 默认课程头像
+     */
+    public static final String DEFAULT_URL = "";
 }

@@ -6,6 +6,9 @@ import cqut.icode.system.mapper.CourseMapper;
 import cqut.icode.system.service.CourseService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import tk.mybatis.mapper.entity.Example;
+
+import java.util.List;
 
 /**
  * @author tq
@@ -17,4 +20,15 @@ public class CourseServiceImpl extends BaseServiceImpl<Course> implements Course
     private CourseMapper courseMapper;
 
 
+    @Override
+    public Boolean checkCodeIsExist(String code) {
+        if (code == null || code.isEmpty()) {
+            return false;
+        }
+        Example example = new Example(Course.class);
+        example.createCriteria().andCondition("upper(code)=", code.toUpperCase());
+        List<Course> courseList = this.selectByExample(example);
+
+        return courseList.size() == 1;
+    }
 }

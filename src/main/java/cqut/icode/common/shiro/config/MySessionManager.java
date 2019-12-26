@@ -1,4 +1,4 @@
-package cqut.icode.common.config;
+package cqut.icode.common.shiro.config;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.shiro.web.servlet.ShiroHttpServletRequest;
@@ -14,6 +14,7 @@ import java.io.Serializable;
 /**
  * @author tq
  */
+
 public class MySessionManager extends DefaultWebSessionManager {
     private Logger logger = LoggerFactory.getLogger(this.getClass());
 
@@ -26,6 +27,7 @@ public class MySessionManager extends DefaultWebSessionManager {
     @Override
     protected Serializable getSessionId(ServletRequest request, ServletResponse response) {
         // 获取请求头中X-Token中保存的sessionId
+
         String id = WebUtils.toHttp(request).getHeader(AUTHORIZATION);
         if (!StringUtils.isEmpty(id)) {
             request.setAttribute(ShiroHttpServletRequest.REFERENCED_SESSION_ID_SOURCE, REFERENCED_SESSION_ID_SOURCE);

@@ -1,6 +1,32 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
 <mapper namespace="cqut.icode.system.mapper.UserMapper">
+
+    <!-- 改变课程的置顶状态 -->
+    <update id="changeCourseTopStatus">
+        update ktp_user_course uc
+        set top = !uc.top
+        where uc.user_id = #{userId}
+          and uc.course_id = #{courseId}
+    </update>
+
+    <!-- 改变课程的归档状态 -->
+    <update id="changeCoursePigeonholeStatus">
+        update ktp_user_course uc
+        set pigeonhole = !uc.pigeonhole
+        where uc.user_id = #{userId}
+          and uc.course_id = #{courseId}
+    </update>
+
+    <!-- 改变课程间的优先级状态 -->
+    <update id="changeCoursePriority">
+        update ktp_user_course uc
+        set priority = #{priority}
+        where uc.user_id = #{userId}
+          and uc.course_id = #{courseId}
+    </update>
+
+    <!-- 找到用户的所有课程的id的集合 -->
     <select id="findCourseIdsByUserId" resultType="Long">
         select ur.course_id courseId
         from ktp_user u
@@ -16,13 +42,15 @@
                c.classname,
                c.semester_year semesterYear,
                c.semester,
-               c.bg_image_url bgImageUrl,
+               c.bg_image_url  bgImageUrl,
                uc.pigeonhole,
                uc.role
         from ktp_user u
                  left join ktp_user_course uc on (u.id = uc.user_id)
                  left join ktp_course c on (c.id = uc.course_id)
-        where u.id = #{userId} and uc.top = 1 and uc.pigeonhole = 0
+        where u.id = #{userId}
+          and uc.top is true
+          and uc.pigeonhole is false
         order by uc.priority
     </select>
 
@@ -34,41 +62,34 @@
                c.classname,
                c.semester_year semesterYear,
                c.semester,
-               c.bg_image_url bgImageUrl,
+               c.bg_image_url  bgImageUrl,
                uc.pigeonhole,
                uc.role
         from ktp_user u
                  left join ktp_user_course uc on (u.id = uc.user_id)
                  left join ktp_course c on (c.id = uc.course_id)
-        where u.id = #{userId} and uc.top = 0 and uc.pigeonhole = 0
+        where u.id = #{userId}
+          and uc.top is false
+          and uc.pigeonhole is false
         order by uc.priority
     </select>
 
-    <select id="findCourseOwnerByCourseId" resultType="cqut.icode.system.entity.User">
-        select u.id, u.username, u.avatar
+    <!-- 找到用户所有的归档课程 -->
+    <select id="findCourseOfPigeonholeByUserId" resultType="java.util.HashMap">
+        select c.id,
+               c.coursename,
+               c.classname,
+               c.semester_year semesterYear,
+               c.semester,
+               c.bg_image_url  bgImageUrl,
+               uc.role
         from ktp_user u
                  left join ktp_user_course uc on (u.id = uc.user_id)
                  left join ktp_course c on (c.id = uc.course_id)
-        where course_id=#{courseId} and uc.role = 1
+        where u.id = #{userId}
+          and uc.pigeonhole is true
+        order by uc.priority
     </select>
 
-    <select id="findStudentsOfCourseByCourseId" resultType="java.util.HashMap">
-        select u.username, u.avatar
-        from ktp_user u
-                 left join ktp_user_course uc on (u.id = uc.user_id)
-                 left join ktp_course c on (c.id = uc.course_id)
-        where course_id=#{courseId} and uc.role = 0
-        order by u.id
-        limit 0, 3
-    </select>
 
-    <select id="findHomeworkOfCourseByCourseId" resultType="java.util.HashMap">
-        select h.id, h.title
-        from ktp_homework h
-                 left join ktp_course_homework uh on (h.id = uh.homework_id)
-                 left join ktp_course c on (c.id = uh.course_id)
-        where course_id=#{courseId}
-        order by h.create_time desc
-        limit 0, 3
-    </select>
 </mapper>

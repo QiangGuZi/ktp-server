@@ -1,10 +1,10 @@
-package cqut.icode.common.realm;
+package cqut.icode.common.shiro.realm;
 
 
 import cqut.icode.common.enums.StatusEnums;
-import cqut.icode.system.entity.Menu;
-import cqut.icode.system.entity.Role;
 import cqut.icode.system.entity.User;
+import cqut.icode.system.entity.perm.Perm;
+import cqut.icode.system.entity.perm.Role;
 import cqut.icode.system.service.PermService;
 import cqut.icode.system.service.RoleService;
 import cqut.icode.system.service.UserService;
@@ -54,15 +54,15 @@ public class AuthRealm extends AuthorizingRealm {
 
         SimpleAuthorizationInfo simpleAuthorizationInfo = new SimpleAuthorizationInfo();
 
-        //获取用户角色
+        // 获取用户角色
         List<Role> roleList = roleService.findUserRole(user.getUsername());
         Set<String> roleSet = roleList.stream().map(Role::getName).collect(Collectors.toSet());
         System.out.println(roleSet);
         simpleAuthorizationInfo.setRoles(roleSet);
 
-        //获取用户权限
-        List<Menu> menuList = menuService.findUserPermissions(user.getUsername());
-        Set<String> permSet = menuList.stream().map(Menu::getPerms).collect(Collectors.toSet());
+        // 获取用户权限
+        List<Perm> menuList = menuService.findUserPermissions(user.getUsername());
+        Set<String> permSet = menuList.stream().map(Perm::getPerms).collect(Collectors.toSet());
         System.out.println(permSet);
         simpleAuthorizationInfo.setStringPermissions(permSet);
 

@@ -1,5 +1,5 @@
 server:
-  port: 8081
+  port: 8080
   tomcat:
     uri-encoding: UTF-8
 
@@ -34,6 +34,10 @@ mybatis:
     # 开启驼峰命名转换，如：Table(create_time) -> Entity(createTime)。不
     # 需要我们关心怎么进行字段匹配，mybatis会自动识别`大写字母与下划线`
     map-underscore-to-camel-case: true
+
+# 替代自带的 Mapper
+mapper:
+  mappers: cqut.icode.common.mapper.MyMapper
 
 #mybaatis分页插件pagehelper设置
 pagehelper:

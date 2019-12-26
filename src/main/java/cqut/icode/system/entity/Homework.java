@@ -17,7 +17,7 @@ import java.util.Date;
 @Table(name = "ktp_homework")
 public class Homework {
     @Id
-    private Integer id;
+    private Long id;
     private String title;
     private String description;
     private String annex;

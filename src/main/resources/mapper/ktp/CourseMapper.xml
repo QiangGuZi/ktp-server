@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="cqut.icode.system.mapper.CourseMapper">
+    <!-- 找到课程的教师(即owner) -->
+    <select id="findCourseOwnerByCourseId" resultType="cqut.icode.system.entity.User">
+        select u.id, u.account, u.avatar
+        from ktp_user u
+                 left join ktp_user_course uc on (u.id = uc.user_id)
+                 left join ktp_course c on (c.id = uc.course_id)
+        where course_id = #{courseId}
+          and uc.role = 1
+    </select>
+
+    <!-- 找到课程的学生，0-3个 -->
+    <select id="findSomeStudentsOfCourseByCourseId" resultType="java.util.HashMap">
+        select u.account, u.avatar
+        from ktp_user u
+                 left join ktp_user_course uc on (u.id = uc.user_id)
+                 left join ktp_course c on (c.id = uc.course_id)
+        where course_id = #{courseId}
+          and uc.role = 0
+        order by u.id
+        limit 0, 3
+    </select>
+
+    <!-- 找到课程的全部学生 -->
+    <select id="findAllStudentsOfCourseByCourseId" resultType="cqut.icode.system.entity.User">
+        select u.id, u.account, u.avatar, u.email
+        from ktp_user u
+                 left join ktp_user_course uc on (u.id = uc.user_id)
+                 left join ktp_course c on (c.id = uc.course_id)
+        where course_id = #{courseId}
+          and uc.role = 0
+        order by u.id
+    </select>
+
+
+    <!--  找到课程的作业，0-3个  -->
+    <select id="findSomeHomeworkOfCourseByCourseId" resultType="java.util.HashMap">
+        select h.id, h.title
+        from ktp_homework h
+                 left join ktp_course_homework uh on (h.id = uh.homework_id)
+                 left join ktp_course c on (c.id = uh.course_id)
+        where course_id = #{courseId}
+        order by h.create_time desc
+        limit 0, 3
+    </select>
+
+    <!-- 找到课程的全部作业 -->
+    <select id="findAllHomeworkOfCourseByCourseId" resultType="cqut.icode.system.entity.Homework">
+        select h.id, h.title, h.description, h.annex, h.create_time
+        from ktp_homework h
+                 left join ktp_course_homework uh on (h.id = uh.homework_id)
+                 left join ktp_course c on (c.id = uh.course_id)
+        where course_id = #{courseId}
+        order by h.create_time desc
+    </select>
+
+    <!-- 找到所有加课码 -->
+    <select id="findAllCode" resultType="java.lang.String">
+        select code
+        from ktp_course
+    </select>
+
+    <!-- 找到课程id -->
+    <select id="findCourseIdByCode" resultType="java.lang.Long">
+        select id
+        from ktp_course
+        where code = #{code}
+    </select>
+
+</mapper>

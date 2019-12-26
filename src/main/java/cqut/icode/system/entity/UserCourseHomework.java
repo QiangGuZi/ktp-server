@@ -1,7 +1,9 @@
 package cqut.icode.system.entity;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 import org.springframework.format.annotation.DateTimeFormat;
 
 import javax.persistence.Column;
@@ -12,7 +14,10 @@ import java.util.Date;
  * @author tq
  * @date 2019/12/18
  */
+
 @Data
+@AllArgsConstructor
+@NoArgsConstructor
 @Table(name = "ktp_user_course_homework")
 public class UserCourseHomework {
     @Column(name = "user_id")

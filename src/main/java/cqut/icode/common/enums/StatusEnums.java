@@ -9,7 +9,8 @@ import lombok.Setter;
  */
 public enum StatusEnums {
     /** 成功的请求 status 都为1，和全局处理双重保护 */
-    SUCCESS(1, "操作成功");
+    SUCCESS(1, "操作成功"),
+    ACCOUNT_UNKNOWN(-1, "账户不存在");
 
     @Getter
     @Setter

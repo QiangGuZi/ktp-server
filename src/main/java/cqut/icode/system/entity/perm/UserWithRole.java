@@ -2,6 +2,7 @@ package cqut.icode.system.entity.perm;
 
 import cqut.icode.system.entity.User;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 
 import javax.persistence.Transient;
 import java.util.List;
@@ -14,6 +15,7 @@ import java.util.List;
  * 而这个`roleId`字段不是必须的，所以创建此类继承User类仅在特殊情况下使用
  * @author tq
  */
+@EqualsAndHashCode(callSuper = true)
 @Data
 public class UserWithRole extends User {
 

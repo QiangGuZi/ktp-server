@@ -1,7 +1,7 @@
-package cqut.icode.common.config;
+package cqut.icode.common.shiro.config;
 
 import cqut.icode.common.dto.SysConstant;
-import cqut.icode.common.realm.AuthRealm;
+import cqut.icode.common.shiro.realm.AuthRealm;
 import org.apache.shiro.authc.credential.HashedCredentialsMatcher;
 import org.apache.shiro.codec.Base64;
 import org.apache.shiro.mgt.SecurityManager;
@@ -21,6 +21,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
+import javax.servlet.Filter;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
@@ -38,19 +39,26 @@ public class ShiroConfig {
         shiroFilterFactoryBean.setLoginUrl("/login");
         shiroFilterFactoryBean.setUnauthorizedUrl("/error/403");
 
+        // 重写几个filter，返回Json数据而不是重定向
+        Map<String, Filter> filtersMap = new LinkedHashMap<>();
+        filtersMap.put("logout", new MyLogoutFilter());
+        shiroFilterFactoryBean.setFilters(filtersMap);
+
         // 配置过滤器链，有先后顺序
         Map<String, String> filterChainDefinitionMap = new LinkedHashMap<>();
         // 不需要登陆即可访问
-        filterChainDefinitionMap.put("/login", "anon");
+        filterChainDefinitionMap.put("/auth/login", "anon");
         filterChainDefinitionMap.put("/gifCode", "anon");
-        // 退出
-        filterChainDefinitionMap.put("/logout", "logout");
-        // 暂时允许所有请求，嘿嘿
-        filterChainDefinitionMap.put("/**", "anon");
-        /* 剩下的所有请求至少都需要登录
-        filterChainDefinitionMap.put("/**", "user"); */
+
+        filterChainDefinitionMap.put("/auth/logout", "logout");
+//         暂时允许所有请求，嘿嘿
+//        filterChainDefinitionMap.put("/**", "anon");
+        // 剩下的所有请求至少都需要登录
+        filterChainDefinitionMap.put("/**", "user");
 
         shiroFilterFactoryBean.setFilterChainDefinitionMap(filterChainDefinitionMap);
+
+
         return shiroFilterFactoryBean;
     }
 
@@ -118,6 +126,8 @@ public class ShiroConfig {
         mySessionManager.setSessionIdUrlRewritingEnabled(true);
         return mySessionManager;
     }
+
+
 
     /**
      * 使用shiro-redis配置

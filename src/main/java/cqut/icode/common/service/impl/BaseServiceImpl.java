@@ -43,6 +43,7 @@ public class BaseServiceImpl<T> implements BaseService<T> {
         Example example = new Example(clazz);
         example.createCriteria().andIn(property, ids);
         this.mapper.deleteByExample(example);
+
     }
 
     @Override

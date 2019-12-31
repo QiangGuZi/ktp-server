@@ -7,6 +7,8 @@ import lombok.NoArgsConstructor;
 import org.springframework.format.annotation.DateTimeFormat;
 
 import javax.persistence.Column;
+import javax.persistence.Id;
+import javax.persistence.IdClass;
 import javax.persistence.Table;
 import java.util.Date;
 
@@ -19,11 +21,15 @@ import java.util.Date;
 @AllArgsConstructor
 @NoArgsConstructor
 @Table(name = "ktp_user_course_homework")
+@IdClass(UserCourseHomeworkIds.class)
 public class UserCourseHomework {
+    @Id
     @Column(name = "user_id")
     private Long userId;
+    @Id
     @Column(name = "course_id")
     private Long courseId;
+    @Id
     @Column(name = "homework_id")
     private Long homeworkId;
     private Boolean submit;

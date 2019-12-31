@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="cqut.icode.system.mapper.UserCourseHomeworkMapper">
+    <insert id="myInsertList" parameterType="java.util.List">
+        INSERT INTO ktp_user_course_homework (user_id, course_id, homework_id, submit, annex, student_work_message,
+        grade, create_time, modify_time)
+        VALUES
+        <foreach collection="list" item="homework" index="index" separator=",">
+            (
+            #{homework.userId,jdbcType=BIGINT}, #{homework.courseId,jdbcType=BIGINT},
+            #{homework.homeworkId,jdbcType=BIGINT}, #{homework.submit,jdbcType=BOOLEAN},
+            #{homework.annex,jdbcType=VARCHAR}, #{homework.studentWorkMessage,jdbcType=VARCHAR},
+            #{homework.grade,jdbcType=INTEGER},
+            #{homework.createTime,jdbcType=TIMESTAMP},#{homework.modifyTime,jdbcType=TIMESTAMP}
+            )
+        </foreach>
+    </insert>
+
+    <select id="getHomeworkList" resultType="java.util.HashMap">
+        select u.id, u.sno, u.account, u.sno, uch.grade, uch.submit, uch.modify_time createTime, uch.annex submitAnnex, h.full_grade fullGrade
+        from ktp_homework h
+                 left join ktp_user_course_homework uch on (h.id = uch.homework_id)
+                 left join ktp_user u on (u.id = uch.user_id)
+        where h.id = #{homeworkId}
+          and uch.course_id = #{courseId}
+    </select>
+
+    <select id="getHomeworkInfo" resultType="java.util.HashMap">
+        select h.title, h.deadline, h.full_grade fullGrade, h.description, h.create_time createTime, h.annex homeworkAnnex
+        <if test="notIsCourseOwner">
+            , ucm.submit, ucm.grade, ucm.annex submitAnnex, ucm.modify_time, ucm.student_work_message
+        </if>
+        from ktp_homework h
+        <if test="notIsCourseOwner">
+            left join ktp_user_course_homework ucm on (ucm.homework_id = h.id)
+        </if>
+        where h.id = #{homeworkId}
+        <if test="notIsCourseOwner">
+           and ucm.user_id = #{userId} and ucm.course_id = ${courseId}
+        </if>
+    </select>
+</mapper>

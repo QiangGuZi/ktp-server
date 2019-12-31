@@ -4,12 +4,11 @@ import cqut.icode.common.dto.SysConstant;
 import cqut.icode.common.exception.GlobalException;
 import cqut.icode.common.service.impl.BaseServiceImpl;
 import cqut.icode.common.utils.JoinCourseCode;
+import cqut.icode.common.utils.PasswordHelper;
 import cqut.icode.system.entity.*;
-import cqut.icode.system.mapper.CourseMapper;
-import cqut.icode.system.mapper.UserCourseHomeworkMapper;
-import cqut.icode.system.mapper.UserCourseMapper;
-import cqut.icode.system.mapper.UserMapper;
+import cqut.icode.system.mapper.*;
 import cqut.icode.system.service.CourseService;
+import cqut.icode.system.service.UserCourseHomeworkService;
 import cqut.icode.system.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -25,14 +24,23 @@ import java.util.*;
 @Service
 public class UserServiceImpl extends BaseServiceImpl<User> implements UserService {
     @Autowired
+    private PasswordHelper passwordHelper;
+
+    @Autowired
     CourseService courseService;
+    @Autowired
+    UserCourseHomeworkService userCourseHomeworkService;
 
     @Autowired
     UserMapper userMapper;
     @Autowired
     CourseMapper courseMapper;
     @Autowired
+    HomeworkMapper homeworkMapper;
+    @Autowired
     UserCourseMapper userCourseMapper;
+    @Autowired
+    CourseHomeworkMapper courseHomeworkMapper;
     @Autowired
     UserCourseHomeworkMapper userCourseHomeworkMapper;
 
@@ -114,7 +122,7 @@ public class UserServiceImpl extends BaseServiceImpl<User> implements UserServic
             // 1. 建立用户与该门课程的联系
             userCourseMapper.insert(userCourse);
 
-            // todo: 建立用户与该门课程所有作业的联系
+            // 建立用户与该门课程所有作业的联系
             // 先找到所有作业
             List<Homework> homeworkList = courseMapper.findAllHomeworkOfCourseByCourseId(courseId);
             List<UserCourseHomework> userCourseHomeworkList = new ArrayList<>();
@@ -157,6 +165,7 @@ public class UserServiceImpl extends BaseServiceImpl<User> implements UserServic
         }
 
         // 2. 插入课程，然后获取他的 id
+        // 不用再次获取，这个insert或自动注入进去
         courseMapper.insert(course);
         Long courseId = courseMapper.findCourseIdByCode(code);
 
@@ -182,6 +191,133 @@ public class UserServiceImpl extends BaseServiceImpl<User> implements UserServic
         return courseList;
     }
 
+    /**
+     * 获取用户某一门课程的基本信息、作业信息等
+     * 如果自己是 教师 ，那就再加上一些统计信息
+     *
+     * @param userId
+     * @param courseId .
+     * @return .
+     */
+    @Override
+    public Map<String, Object> getCourseInfoByUser(Long userId, Long courseId) {
+        Map<String, Object> courseInfo = courseMapper.findCourseInfoByCourseId(courseId);
+        Map<String, Object> courseStatistics = courseMapper.findCourseStatisticsInfoByCourseId(courseId);
+
+        courseInfo.putAll(courseStatistics);
+        return courseInfo;
+    }
+
+    /**
+     * 用户创建一门课程的作业
+     * 1.创立作业
+     * 2.创立作业与课程的联系
+     * 3.创立作业与课程所有学生的联系
+     *
+     * @param userId   用户id
+     * @param courseId 课程id
+     * @param homework 课程的一些基本信息
+     */
+    @Override
+    public void createHomework(Long userId, Long courseId, Homework homework) {
+        // 1.创立作业
+        // 验证先不做了
+        homework.setCreateTime(new Date());
+        homeworkMapper.insert(homework);
+
+        // 2.创立作业与课程的联系
+        // 上面的 insert 或自动获取到自动生成的 id
+        CourseHomework courseHomework = new CourseHomework();
+        courseHomework.setCourseId(courseId);
+        courseHomework.setHomeworkId(homework.getId());
+        courseHomeworkMapper.insert(courseHomework);
+
+        // 3.创立作业与课程所有学生的联系
+        // 先找到所有学生
+        List<User> userList = courseMapper.findAllStudentsOfCourseByCourseId(courseId);
+        List<UserCourseHomework> userCourseHomeworkList = new ArrayList<>();
+
+        for (User student : userList) {
+            UserCourseHomework userCourseHomework = new UserCourseHomework(student.getId(), courseId, homework.getId(),
+                    false, "", "", null, new Date(), null);
+            userCourseHomeworkList.add(userCourseHomework);
+        }
+        if (!userCourseHomeworkList.isEmpty()) {
+            userCourseHomeworkMapper.myInsertList(userCourseHomeworkList);
+        }
+    }
+
+    /**
+     * 用户获取某门课程的作业列表
+     *
+     * @param userId   用户id
+     * @param courseId 课程id
+     * @return .
+     */
+    @Override
+    public List<HashMap<String, Object>> getHomeworkByCourseId(Long userId, Long courseId) {
+        Boolean isCourseOwner = courseMapper.findCourseOwnerByCourseId(courseId).getId().equals(userId);
+        return courseMapper.findAllHomeworkStatisticsInfoByCourseId(courseId, isCourseOwner);
+    }
+
+    /**
+     * 上传作业
+     *
+     * @param userCourseHomework 。
+     */
+    @Override
+    public void saveUserCourseHomework(UserCourseHomework userCourseHomework) {
+        userCourseHomework.setSubmit(true);
+        userCourseHomework.setModifyTime(new Date());
+        userCourseHomeworkService.updateNotNull(userCourseHomework);
+    }
+
+    /**
+     * 批改作业
+     *
+     * @param userCourseHomework 。
+     */
+    @Override
+    public void updateHomeworkByTeacher(UserCourseHomework userCourseHomework) {
+        userCourseHomework.setSubmit(true);
+        userCourseHomeworkService.updateNotNull(userCourseHomework);
+    }
+
+    /**
+     * 批量批改作业
+     *
+     * @param userCourseHomework 。
+     */
+    @Override
+    public void updateHomeworkByTeacher(UserCourseHomework[] userCourseHomework) {
+        for (UserCourseHomework courseHomework : userCourseHomework) {
+            courseHomework.setSubmit(true);
+            this.updateHomeworkByTeacher(courseHomework);
+        }
+    }
+
+    @Override
+    public List<HashMap<String, Object>> getHomeworkList(Long courseId, Long homeworkId) {
+        return userCourseHomeworkMapper.getHomeworkList(courseId, homeworkId);
+    }
+
+    @Override
+    public HashMap<String, Object> getHomeworkInfo(Long userId, Long courseId, Long homeworkId) {
+        User owner = courseMapper.findCourseOwnerByCourseId(courseId);
+        Boolean notIsCourseOwner = !(owner.getId().equals(userId));
+        HashMap<String, Object> result = userCourseHomeworkMapper.getHomeworkInfo(userId, courseId, homeworkId, notIsCourseOwner);
+        if (!notIsCourseOwner) {
+            result.put("owner", true);
+        }
+        return result;
+    }
+
+    @Override
+    public void insertUser(User user) {
+        user.setCreateTime(new Date());
+        passwordHelper.encryptPassword(user);
+        userMapper.insert(user);
+    }
 
     /**
      * 获取所有的课程
@@ -236,5 +372,6 @@ public class UserServiceImpl extends BaseServiceImpl<User> implements UserServic
 
         return list;
     }
+
 
 }

@@ -6,6 +6,7 @@ import cqut.icode.system.entity.User;
 
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * @author tq
@@ -66,5 +67,6 @@ public interface UserMapper extends MyMapper<User> {
      * @param priority .
      */
     void changeCoursePriority(Long userId, Long courseId, Long priority);
+
 
 }

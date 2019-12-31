@@ -50,9 +50,34 @@
     <select id="findAllHomeworkOfCourseByCourseId" resultType="cqut.icode.system.entity.Homework">
         select h.id, h.title, h.description, h.annex, h.create_time
         from ktp_homework h
-                 left join ktp_course_homework uh on (h.id = uh.homework_id)
-                 left join ktp_course c on (c.id = uh.course_id)
+                 left join ktp_course_homework ch on (h.id = ch.homework_id)
+                 left join ktp_course c on (c.id = ch.course_id)
         where course_id = #{courseId}
+        order by h.create_time desc
+    </select>
+
+    <!-- 找到课程的全部作业 & 一些额外的统计信息-->
+    <select id="findAllHomeworkStatisticsInfoByCourseId"
+            resultType="java.util.HashMap">
+        select h.id, h.title, h.description, h.annex, h.deadline, h.full_grade fullGrade, h.create_time createTime,
+        uch.submit, uch.annex submitAnnex, uch.student_work_message studentWorkMessage, uch.grade, uch.modify_time submitModifyTime
+        <if test="isCourseOwner">
+            <!-- 打了分的就是已阅 -->
+            , count(if(uch.grade is not null,
+            uch.user_id, null)) yiYue
+            <!-- 没打分，已提交的就是未批 -->
+            , count(if(uch.grade is null and uch.submit is true,
+            uch.user_id, null)) weiPi
+            <!-- 没提交的就是未交 -->
+            , count(if(uch.submit is false,
+            uch.user_id, null)) weiJiao
+        </if>
+        from ktp_homework h
+        left join ktp_course_homework ch on (h.id = ch.homework_id)
+        left join ktp_course c on (c.id = ch.course_id)
+        left join ktp_user_course_homework uch on (h.id = uch.homework_id and c.id=uch.course_id)
+        where c.id = #{courseId}
+        group by h.id,h.create_time
         order by h.create_time desc
     </select>
 
@@ -67,6 +92,24 @@
         select id
         from ktp_course
         where code = #{code}
+    </select>
+
+    <!-- 找到课程的基本信息 -->
+    <select id="findCourseInfoByCourseId" resultType="java.util.Map">
+        select c.coursename, c.classname, c.code, count(u.id) studentsCount
+        from ktp_course c
+                 left join ktp_user_course uc on (c.id = uc.course_id)
+                 left join ktp_user u on (u.id = uc.user_id)
+        where c.id = #{courseId}
+          and uc.role = 0
+    </select>
+
+    <!-- 找到课程的统计信息(作业次数、(todo: 互动次数、测试次数)) -->
+    <select id="findCourseStatisticsInfoByCourseId" resultType="java.util.Map">
+        select count(ch.homework_id) homeworkCount
+        from ktp_course c
+                 left join ktp_course_homework ch on c.id = ch.course_id
+        where c.id = #{courseId}
     </select>
 
 </mapper>

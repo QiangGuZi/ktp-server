@@ -35,20 +35,22 @@ public class ShiroConfig {
     public ShiroFilterFactoryBean shiroFilterFactoryBean(SecurityManager securityManager) {
         ShiroFilterFactoryBean shiroFilterFactoryBean = new ShiroFilterFactoryBean();
         shiroFilterFactoryBean.setSecurityManager(securityManager);
-        // todo: 记得重写相关 filter
         shiroFilterFactoryBean.setLoginUrl("/login");
         shiroFilterFactoryBean.setUnauthorizedUrl("/error/403");
 
         // 重写几个filter，返回Json数据而不是重定向
         Map<String, Filter> filtersMap = new LinkedHashMap<>();
         filtersMap.put("logout", new MyLogoutFilter());
+        filtersMap.put("custom", new MyUserFilter());
         shiroFilterFactoryBean.setFilters(filtersMap);
 
         // 配置过滤器链，有先后顺序
         Map<String, String> filterChainDefinitionMap = new LinkedHashMap<>();
         // 不需要登陆即可访问
         filterChainDefinitionMap.put("/auth/login", "anon");
+        filterChainDefinitionMap.put("/auth/register", "anon");
         filterChainDefinitionMap.put("/gifCode", "anon");
+        filterChainDefinitionMap.put("/system/user/file", "anon");
 
         filterChainDefinitionMap.put("/auth/logout", "logout");
 //         暂时允许所有请求，嘿嘿
